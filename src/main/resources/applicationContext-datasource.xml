@@ -11,6 +11,7 @@
 
     <context:component-scan base-package="com.mmall" annotation-config="true"/>
 
+    <!--这是对属性进行分离，之后要使用到这些属性，直接引入前面的就好了-->
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="order" value="2"/>
@@ -73,9 +74,8 @@
                 </bean>
             </array>
         </property>
-
     </bean>
-
+    <!--会扫描dao层-->
     <bean name="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.mmall.dao"/>
     </bean>
@@ -85,7 +85,7 @@
     <!-- 事务管理 -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
-        <property name="rollbackOnCommitFailure" value="true"/>
+        <property name="rollbackOnCommitFailure" value="true"/><!--提交失败是进行回滚-->
     </bean>
 
 

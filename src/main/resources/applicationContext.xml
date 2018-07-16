@@ -14,7 +14,7 @@
     <!--<context:annotation-config/>-->
     <aop:aspectj-autoproxy/>
 
-
+    <!--将application文件进行分离-->
     <import resource="applicationContext-datasource.xml"/>
 
 
