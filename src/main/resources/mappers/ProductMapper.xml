@@ -176,4 +176,30 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
+  <select id="selectList" resultMap="BaseResultMap">
+    select
+       <include refid="Base_Column_List"/>
+    from mmall_product
+    order by id asc<!--这里加分号本来是没有问题的，但是我们是使用pagehelper，它会自动在后面加一个limit 10 offset,因为一个分号会使得我们的sql失效-->
+  </select>
+
+  <select id="selectByNameAndProduct" resultMap="BaseResultMap" parameterType="map">
+      select
+        <include refid="Base_Column_List"/>
+      from mmall_product
+      <where><!--这个where标签会把第一个and或者or给去掉-->
+        <if test="productName!=null">
+        and name like #{productName}
+        </if>
+
+         <if test="productId!=null">
+        and id=#{productId}
+         </if>
+      </where>
+  </select>
+
+
+
 </mapper>

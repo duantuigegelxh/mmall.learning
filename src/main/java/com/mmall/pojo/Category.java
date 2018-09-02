@@ -86,4 +86,28 @@ public class Category {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+    /**
+     *hashcode和equals的关联是，如果两个对象相同，equals返回true，那么他们的hashcode要相同
+     * 如果两个对象的hashcode相同，他们并不一定相同，也就是说hashcode相同，但用equals比较的话，也可能返回false
+     *
+     */
+    public boolean equals(Object o){
+        if(this==o)
+            return true;
+        if(o==null||getClass()!=o.getClass())
+            return false;
+
+        Category category=(Category) o;
+        return !(id!=null?!=id.equals(category.id):category.id!=null);
+    }
+
+    public int hashCode(){
+        return id!=null?id.hashCode():0;
+    }
+
+
+
+
+
 }

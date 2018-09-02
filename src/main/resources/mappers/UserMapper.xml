@@ -151,4 +151,63 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="checkUsername" resultType="int" parameterType="String">
+       select count(1) from mmall_user
+       where username=#{username}<!--这里用#号是为了防止SQL注入，这里采用了预编译-->
+  </select>
+
+  <select id="checkEmail" resultType="int" parameterType="String">
+    select count(1) from mail_user
+    where email=#{email}
+  </select>
+  <!--因为在前面已经声明了一个BaseResultMap,所以在这里，我们直接引用这个，到时候会返回User对象-->
+   <select id="selectLogin" resultMap="BaseResultMap" parameterType="map"><!--因为我们会传入多个参数，所以这里我们用一个map来接收-->
+     <!--这里不建议使用select * 来查找参数，第一是因为我们做业务的时候，会有很多其他人使用，当表越来越大，可能会有我们一些不想查看到的信息，这样会导致我们出现错误，
+      原则是要什么就查什么,这个是引用了我们上面写的sql标签，里面有我们想要的字段。-->
+     select <include refid="Base_Column_list"/>
+     from mmall_user
+     where username =#{username} and password=#{password}
+   </select>
+
+  <select id="selectQuestionByUsername" parameterType="String" resultMap="String">
+    select question from mmall_user where username=#{username};
+  </select>
+
+  <select id="checkAnswer" resultType="int" parameterType="map">
+    <!--查找User没有查找-->
+    select count(1) from mmall_user where username=#{username} and question=#{question} and answer=#{answer}
+  </select>
+
+
+  <update id="updatePasswordByUsername" parameterType="map">
+    update mmall_user
+    SET password=#{passwordNew},update_time=now()
+    where username=#{username}
+  </update>
+
+  <!--count(1)会比count(*)效率高-->
+  <select id="checkPassword" resultType="int" parameterType="map">
+    select count(1) from mmall_user
+    where id=#{userId}
+    and password=#{password}
+  </select>
+
+  <select id="checkEmailByUserId" resultType="int" parameterType="map">
+    select count(1) from mmall_user
+    where mail=#{email}
+    and id !=#{userId}<!--当查到的email不是当前用户id相匹配，所以说明已经被其他用户所占用-->
+  </select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
