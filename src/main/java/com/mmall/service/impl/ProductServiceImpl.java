@@ -36,6 +36,9 @@ public class ProductServiceImpl implements IProductService{
     @Autowired
     private CategoryMapper categoryMapper;
 
+    @Autowired
+    private ICategoryService iCategoryService;
+
     //保存或更新商品
     public ServerResponse saveOrUpdateProduct(Product product){
         if(product!=null){
@@ -188,6 +191,81 @@ public class ProductServiceImpl implements IProductService{
         pageResult.setList(productListVoList);
         return ServerResponse.createBySuccess(pageResult);
     }
+
+
+
+
+
+
+
+
+    //前台获取产品的详情
+    public ServerResponse<ProductDetailVo> getProductDetail(Integer productId){
+        if(productId==null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDEsc());
+        }
+        Product product=productMapper.selectByPrimaryKey(productId);
+        if(product==null){
+            return ServerResponse.createByErrorMessage("产品已下架或者删除");
+        }
+        if(product.getStatus()!=Const.ProductStatusEnum.ON_SALE.getCode()){
+            return ServerResponse.createByErrorMessage("产品已下架或者删除");
+        }
+        ProductDetailVo productDetailVo=assembleProductDetailVo(product);
+        return ServerResponse.createBySuccess(productDetailVo);
+    }
+
+
+
+    //前台获取商品的列表
+    public ServerResponse<PageInfo> getProductByKeywordCateory(String keyword,Integer categoryId,int pageNum,int PageSize,String orderBy){
+        if(StringUtils.isBlank(keyword)&&categoryId==null){//进行参数校验
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDEsc());
+        }
+
+        /*
+        这个集合的作用是当传分类的时候，假设他传一个高级的分类，例如电子商品，电子商品下面还有手机，手机下面又分为智能机
+        和非智能机等等，当我们传一个大类的时候，我们就要调用我们写的一个递归算法，把所有属于这个分类的子分类递归出来，并
+        且再加上本身，把这些categoryId放入我们idList里面，然后我们查询sql的时候，直接用一个参数命中我们查询的结果
+         */
+        List<Integer> categoryIdList=new ArrayList<Integer>();
+        if(categoryId!=null){
+            Category category=categoryMapper.selectByPrimaryKey(categoryId);
+            if(category==null&&StringUtils.isBlank(keyword)){
+                //没有该分类，并且没有关键字，这个时候返回一个空的结果集，不报错
+                PageHelper.startPage(pageNum,pageSize);
+                List<ProductListVo> productListVoList=Lists.newArrayList();
+                PageInfo pageInfo=new PageInfo(productListVoList);
+                return ServerResponse.createBySuccess();
+            }
+            //通过之前写的一个递归函数，查询出所有的分类
+            categoryIdList=iCategoryService.selectCategoryAndChildrenById(category.getId()).getData();
+        }
+        if（StringUtils.isNotBlank(keyword)){
+            keyword=new StringBuilder().append("%").append(keyword).append("%").toString();
+        }
+
+        PageHelper.startPage(pageNum,pageSize);
+        //排序处理
+        if(StringUtils.isNotBlank(orderBy)){
+            if(Const.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy)){
+                String[] orderByArray=orderBy.split("_");
+                PageHelper.orderBy(orderByArray[0]+""+orderByArray(1));
+            }
+        }
+        List<Product> productList=productMapper.selectByNameAndCategoryIds(StringUtils.isBlank(keyword)?null:keyword,categoryIdList.size()==0?null:categoryIdList);//需要进行空判断
+
+        List<ProductListVo> productListVoList=Lists.newArrayList();
+        for(Product product:productList){
+            ProductListVo productListVo=assembleProductListVo(product);
+            productListVo.add(produtListVo);
+        }
+        PageInfo pageInfo=new PageInfo(productList);
+        pageInfo.setList(productListVoList);
+
+        return ServerResponse.createBySuccess(pageInfo);
+    }
+
 }
 
 

@@ -23,4 +23,23 @@ public class IProductService {
 
     //搜索
     ServerResponse<PageInfo> searchProduct(String productName,Integer productId,int pageNum,int pageSize);
+
+    //前台页面的商品详情
+    ServerResponse<ProductDetailVo> getProductDetail(Integer productId);
+
+    //通过通过种类和关键字进行分类
+    ServerResponse<PageInfo> getProductByKeywordCateory(String keyword,Integer categoryId,int pageNum,int PageSize,String orderBy);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

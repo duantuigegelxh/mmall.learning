@@ -19,5 +19,5 @@ public class ICategoryService {
     ServerResponse<Category> getChildrenParallelCategory(Integer categoryId);
 
     // 递归查询子节点的信息
-    ServerResponse selectCategoryAndChildreById(Integer categoryId);
+    ServerResponse<List<Integer>> selectCategoryAndChildreById(Integer categoryId);
 }

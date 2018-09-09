@@ -77,7 +77,7 @@ public class CategoryServiceImpl extends ICategoryService {
      * @param categoryId
      * @return
      */
-    public ServerResponse selectCategoryAndChildreById(Integer categoryId){
+    public ServerResponse<List<Integer>> selectCategoryAndChildreById(Integer categoryId){
         //拿到这个后，判断子节点下面是否有子节点
         Set<Category> categorySet=Sets.newHashSet();
         findChildCategory(categorySet,categoryId);

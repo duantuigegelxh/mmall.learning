@@ -116,4 +116,76 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
+
+  <select id="selectCartByUserIdProductId" resultMap="BaseResultMap" parameterType="map">
+    select
+       <include refid="Base_Column_List"></include>
+    from mmall_cart
+    <where>
+      user_id = #{userId} and product_id=#{productId}
+    </where>
+  </select>
+
+
+  <select id="selectCartByUserId" resultMap="BaseResultMap" parameterType="map">
+    select 
+    <include refid="Base_Column_List"></include>
+    from mmall_cart
+    where user_id=#{userId}
+  </select>
+
+
+  <select id="selectCartProductCheckedStatusByUserId" resultType="int" parameterType="int">
+    select COUNT(1) from mmall_cart
+    <where>
+      checked=0 and user_id=#{userId}
+    </where>
+  </select>
+
+  <delete id="deleteByUserIdProducts" parameterType="map">
+    delete from mmall_cart where userId=#{user_id}
+    <if test="productIdList">
+      and product_id in
+      <foreach collection="productIdList " item="item" index="index" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </delete>
+
+  <update id="checkOrUnchecedAllProduct" parameterMap="map">
+    update mmall_cart
+    set checked=#{checked},
+    update_time=now();
+    where user_id=#{userId}
+    <if test="productId!=null">
+      and product_id=#{productId}
+    </if>
+  </update>
+
+  <select id="selectCartProductCount" parameterType="int" resultType="int">
+    select IFNULL(sum(quantity),0) as count from mmall_cart where userId=#{userId};<!--这里有个风险，也就是说当userId没有的时候，sum函数会返回一个null，但是基本数据类型不接受null
+    ，因此我们需要在sql中或者业务逻辑上进行编写-->
+  </select>
+
+  <!--查到我们购物车中被勾选的数据-->
+  <select id="selectCheckedCartByUserId" parameterType="int" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List">
+    from mmall_cart where user_id=#{userId}
+    and checked=1;
+  </include>
+  </select>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+

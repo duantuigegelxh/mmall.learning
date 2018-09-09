@@ -21,5 +21,8 @@ public interface ProductMapper {
     //返回商品list集合
     List<Product> selectList();
 
+    //通过名字和id查询集合
     List<Product> selectByNameAndProductId(@Param("productName") String productName,@Param("productId") Integer productId);
+
+    List<Product> selectByNameAndCategoryIds(@Param("productName")String productName,@Param("categoryIdList")List<Integer> categoryIdList);
 }
