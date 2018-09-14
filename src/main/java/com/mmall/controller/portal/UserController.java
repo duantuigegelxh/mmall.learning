@@ -37,7 +37,7 @@ public class UserController {
     public ServerResponse<User> login(String username,String password,HttpSession session){
         ServerResponse<User> response=iUserService.login(username,password);
         if(response.isSuccess()){
-            session.setAttribute(Const.CURRENT_USER,response.getData);//将此会话标记为最近登录的用户,response.getData为User的对象
+            session.setAttribute(Const.CURRENT_USER,response.getData());//将此会话标记为最近登录的用户,response.getData为User的对象
         }
         //service-->mybatis-->dao
         return response;
